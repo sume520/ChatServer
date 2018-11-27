@@ -46,8 +46,8 @@ passivesock(int port, const char *transport, int qlen)
 	sin.sin_port=port;
 
     /* Map protocol name to protocol number */
-	// if ( (ppe = getprotobyname(transport)) == 0)
-	// 	errexit("can't get \"%s\" protocol entry\n", transport);
+	if ( (ppe = getprotobyname(transport)) == 0)
+		errexit("can't get \"%s\" protocol entry\n", transport);
 
     /* Use protocol to choose a socket type */
 	if (strcmp(transport, "udp") == 0)
@@ -56,8 +56,8 @@ passivesock(int port, const char *transport, int qlen)
 		type = SOCK_STREAM;
 
     /* Allocate a socket */
-	//s = socket(PF_INET, type, ppe->p_proto);
-	s = socket(PF_INET, type, 0);
+	s = socket(PF_INET, type, ppe->p_proto);
+	//s = socket(PF_INET, type, 0);
 	if (s < 0)
 		errexit("can't create socket: %s\n", strerror(errno));
 
