@@ -17,7 +17,7 @@
 #define BUFSIZE 256
 
 const int PORT = 3344;
-int ssocks[QLEN] = {NULL};
+int ssocks[QLEN] ;
 
 void recvMsg(int fd);
 void broadcastMsg(int, char *,int);
@@ -58,8 +58,10 @@ int main(int argc, char *argv[])
         }
         printf("服务器与客户端建立链接...\n\n");
         if (pthread_create(&th[conncount-1], NULL, (void *(*)(void *))recvMsg,
-                           (void *)ssocks[conncount - 1]) < 0)
-            errexit("phread_create:%s\n", strerror(errno));
+                           (void *)(long)ssocks[conncount - 1]) < 0) {
+            //errexit("phread_create:%s\n", strerror(errno));
+            printf("有客户端退出\n");
+        }
     }
 }
 
@@ -91,7 +93,6 @@ void recvMsg(int fd)
             printf("%s",buf);
             broadcastMsg(fd,buf,cc);
         }
-        
     }
     shutdown(fd,2);
 }
@@ -102,11 +103,12 @@ void broadcastMsg(int fd, char *buf,int cc)
     for (int i = 0; i < QLEN; i++)
     {
         //printf("准备转发...\n");
-        if (ssocks[i] != NULL && ssocks[i]!=fd )
-        {
-            if (write(ssocks[i], buf, cc) < 0){}
-                //errexit("广播消息失败！%s\n", strerror(errno));
+
+        if (ssocks[i]==fd||write(ssocks[i], buf, cc) < 0) {
+            //errexit("广播消息失败！%s\n", strerror(errno));
+            //printf("转发出错\n");
         }
+
     }
     buf = "广播完成\n";
     fputs(buf,stdout);
