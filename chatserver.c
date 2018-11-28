@@ -104,9 +104,8 @@ void broadcastMsg(int fd, char *buf,int cc)
     {
         //printf("准备转发...\n");
 
-        if (ssocks[i]==fd||write(ssocks[i], buf, cc) < 0) {
-            //errexit("广播消息失败！%s\n", strerror(errno));
-            //printf("转发出错\n");
+        if (ssocks[i]!=fd && ssocks[i]!=0) {
+            if(write(ssocks[i], buf, cc) < 0){}
         }
 
     }
